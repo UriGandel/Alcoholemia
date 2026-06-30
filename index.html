@@ -6,296 +6,511 @@
   <title>Calculadora de alcoholemia</title>
   <style>
     :root {
-      --night: #11130f;
-      --ink: #191b16;
-      --paper: #fff7e8;
-      --cream: #f3e6ca;
-      --muted: #7f7768;
-      --line: rgba(25, 27, 22, .16);
-      --green: #149a6c;
-      --yellow: #e9ba45;
-      --orange: #df6d31;
-      --red: #c83d35;
-      --blue: #277ea5;
-      --violet: #5c4a8f;
-      --shadow: 0 24px 70px rgba(17, 19, 15, .22);
+      --ink: #171713;
+      --text: #25251f;
+      --muted: #6f7169;
+      --paper: #fbf8ef;
+      --panel: #ffffff;
+      --line: #ded9cb;
+      --soft: #f1ebdd;
+      --green: #10845d;
+      --yellow: #e0b43c;
+      --orange: #d86828;
+      --red: #bd342d;
+      --blue: #2b77a8;
+      --shadow: 0 18px 48px rgba(23, 23, 19, .14);
       --radius: 8px;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
-    html {
-      min-height: 100%;
-      background: var(--night);
-    }
+    html { background: #e7e0d0; }
 
     body {
       margin: 0;
       min-height: 100vh;
-      color: var(--ink);
-      font-family: "Aptos", "Trebuchet MS", Verdana, sans-serif;
+      color: var(--text);
+      font-family: "Aptos", "Segoe UI", Tahoma, sans-serif;
       background:
-        linear-gradient(120deg, rgba(20, 154, 108, .34), transparent 34rem),
-        linear-gradient(250deg, rgba(200, 61, 53, .28), transparent 32rem),
-        repeating-linear-gradient(90deg, rgba(255, 247, 232, .07) 0 1px, transparent 1px 96px),
-        #1b1c17;
+        linear-gradient(90deg, rgba(23, 23, 19, .05) 1px, transparent 1px) 0 0 / 44px 44px,
+        linear-gradient(180deg, #fffaf0 0, #e8dfce 100%);
     }
 
-    button,
-    input,
-    select {
-      font: inherit;
-    }
-
-    button {
-      border: 0;
-      cursor: pointer;
-    }
+    button, input, select { font: inherit; }
+    button { border: 0; cursor: pointer; }
 
     main {
-      width: min(1200px, calc(100% - 28px));
+      width: min(1160px, calc(100% - 24px));
       margin: 0 auto;
-      padding: 28px 0;
+      padding: 18px 0 32px;
     }
 
-    .shell {
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 12px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      font-weight: 950;
+      letter-spacing: 0;
+    }
+
+    .mark {
+      display: grid;
+      place-items: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 999px;
+      background: var(--ink);
+      color: #fff7e8;
+      font-weight: 950;
+    }
+
+    .notice {
+      margin: 0;
+      color: var(--muted);
+      font-size: .92rem;
+      text-align: right;
+    }
+
+    .dashboard {
+      display: grid;
+      grid-template-columns: minmax(310px, .88fr) minmax(0, 1.12fr);
+      gap: 16px;
+      align-items: start;
+    }
+
+    .result-panel {
+      position: sticky;
+      top: 14px;
       overflow: hidden;
-      border: 1px solid rgba(255, 247, 232, .2);
-      border-radius: 8px;
-      background: var(--paper);
+      border: 1px solid rgba(23, 23, 19, .12);
+      border-radius: var(--radius);
+      background: var(--panel);
       box-shadow: var(--shadow);
     }
 
-    .hero {
+    .signal {
       position: relative;
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) 360px;
-      gap: 26px;
-      padding: clamp(22px, 4vw, 48px);
-      color: var(--paper);
+      min-height: 430px;
+      padding: clamp(20px, 4vw, 34px);
+      color: #fffaf0;
       background:
-        linear-gradient(135deg, rgba(17, 19, 15, .94), rgba(17, 19, 15, .78)),
-        radial-gradient(circle at 18% 30%, rgba(233, 186, 69, .38), transparent 16rem),
-        radial-gradient(circle at 82% 20%, rgba(39, 126, 165, .42), transparent 18rem),
-        var(--night);
+        linear-gradient(135deg, rgba(255, 255, 255, .14), transparent 42%),
+        var(--green);
+      transition: background .2s ease, color .2s ease;
     }
 
-    .hero::after {
+    .signal::after {
       content: "";
       position: absolute;
-      inset: auto -60px -130px auto;
-      width: 360px;
+      right: -80px;
+      bottom: -110px;
+      width: 260px;
       aspect-ratio: 1;
-      border: 34px solid rgba(255, 247, 232, .1);
+      border: 34px solid rgba(255, 255, 255, .16);
       border-radius: 999px;
       pointer-events: none;
     }
 
-    .eyebrow {
-      width: max-content;
-      max-width: 100%;
-      margin: 0 0 18px;
-      border: 1px solid rgba(255, 247, 232, .34);
-      border-radius: 999px;
-      color: #f4d37d;
-      padding: 7px 12px;
+    .signal.warn { color: var(--ink); background: linear-gradient(135deg, rgba(255,255,255,.2), transparent 42%), var(--yellow); }
+    .signal.high { background: linear-gradient(135deg, rgba(255,255,255,.15), transparent 42%), var(--orange); }
+    .signal.danger { background: linear-gradient(135deg, rgba(255,255,255,.12), transparent 42%), var(--red); }
+    .signal.critical { background: linear-gradient(135deg, rgba(255,255,255,.08), transparent 42%), #111; }
+
+    .label {
+      position: relative;
+      z-index: 1;
+      margin: 0 0 20px;
       font-size: .82rem;
-      font-weight: 800;
+      font-weight: 950;
       letter-spacing: .08em;
       text-transform: uppercase;
+      opacity: .78;
     }
 
     h1 {
-      max-width: 760px;
+      position: relative;
+      z-index: 1;
+      max-width: 420px;
       margin: 0;
       font-family: Georgia, "Times New Roman", serif;
-      font-size: clamp(2.75rem, 7.6vw, 6.9rem);
-      line-height: .9;
+      font-size: clamp(2.3rem, 5vw, 4.9rem);
+      line-height: .96;
       letter-spacing: 0;
     }
 
-    .hero-text {
-      max-width: 660px;
-      margin: 20px 0 0;
-      color: rgba(255, 247, 232, .78);
-      font-size: clamp(1rem, 2vw, 1.18rem);
-      line-height: 1.65;
-    }
-
-    .hero-card {
+    .decision {
       position: relative;
       z-index: 1;
-      align-self: end;
-      border: 1px solid rgba(255, 247, 232, .18);
-      border-radius: var(--radius);
-      background: rgba(255, 247, 232, .08);
-      padding: 20px;
-      backdrop-filter: blur(18px);
+      display: inline-flex;
+      margin-top: 20px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .18);
+      padding: 10px 14px;
+      font-weight: 950;
+      line-height: 1.2;
     }
 
-    .hero-card strong {
-      display: block;
-      margin-bottom: 8px;
-      color: #f4d37d;
-      font-size: 1.35rem;
-      font-family: Georgia, "Times New Roman", serif;
-    }
+    .warn .decision { background: rgba(23, 23, 19, .12); }
 
-    .hero-card p {
-      margin: 0;
-      color: rgba(255, 247, 232, .78);
-      line-height: 1.55;
-    }
-
-    .app {
-      display: grid;
-      grid-template-columns: minmax(0, 1.06fr) minmax(340px, .94fr);
-      gap: 0;
-      min-height: 650px;
-    }
-
-    .controls {
-      padding: clamp(18px, 3vw, 34px);
-      border-right: 1px solid var(--line);
-      background:
-        linear-gradient(180deg, rgba(255, 255, 255, .36), rgba(255, 255, 255, 0)),
-        var(--paper);
-    }
-
-    .result {
+    .reading {
       position: relative;
-      padding: clamp(18px, 3vw, 34px);
-      background: #f7edd9;
+      z-index: 1;
+      display: flex;
+      align-items: end;
+      gap: 10px;
+      margin-top: 34px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(4.2rem, 12vw, 8rem);
+      line-height: .78;
     }
 
-    .section-head {
+    .unit {
+      margin-bottom: 10px;
+      font-family: "Aptos", "Segoe UI", Tahoma, sans-serif;
+      font-size: 1rem;
+      font-weight: 950;
+      text-transform: uppercase;
+    }
+
+    .scale {
+      position: relative;
+      z-index: 1;
+      margin-top: 30px;
+    }
+
+    .track {
+      height: 14px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .28);
+    }
+
+    .warn .track { background: rgba(23, 23, 19, .18); }
+
+    .fill {
+      display: block;
+      width: 0;
+      height: 100%;
+      border-radius: inherit;
+      background: #fffaf0;
+      transition: width .22s ease;
+    }
+
+    .warn .fill { background: var(--ink); }
+
+    .ticks {
       display: flex;
       justify-content: space-between;
-      gap: 18px;
-      align-items: end;
-      margin-bottom: 18px;
+      margin-top: 9px;
+      font-size: .8rem;
+      font-weight: 900;
+      opacity: .72;
     }
 
-    h2 {
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      border-top: 1px solid var(--line);
+      background: #fffdf8;
+    }
+
+    .metric {
+      min-height: 92px;
+      padding: 16px;
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .metric:nth-child(2n) { border-right: 0; }
+
+    .metric strong {
+      display: block;
+      margin-bottom: 6px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.45rem;
+      line-height: 1;
+    }
+
+    .metric span {
+      color: var(--muted);
+      font-size: .88rem;
+      line-height: 1.35;
+    }
+
+    .panel {
+      border: 1px solid rgba(23, 23, 19, .12);
+      border-radius: var(--radius);
+      background: rgba(255, 253, 248, .92);
+      box-shadow: var(--shadow);
+    }
+
+    .panel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 18px clamp(16px, 3vw, 26px);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .panel-head h2 {
       margin: 0;
       font-family: Georgia, "Times New Roman", serif;
-      font-size: clamp(1.35rem, 2.8vw, 2rem);
+      font-size: clamp(1.45rem, 3vw, 2rem);
       letter-spacing: 0;
     }
 
     .hint {
-      margin: 6px 0 0;
+      margin: 4px 0 0;
       color: var(--muted);
       line-height: 1.45;
     }
 
-    .pill {
+    .step-badge {
+      display: inline-grid;
+      place-items: center;
       flex: 0 0 auto;
-      border: 1px solid var(--line);
+      width: 34px;
+      height: 34px;
       border-radius: 999px;
-      background: #fffaf0;
-      color: var(--muted);
-      padding: 8px 11px;
-      font-size: .82rem;
-      font-weight: 800;
+      background: var(--ink);
+      color: #fff7e8;
+      font-weight: 950;
     }
 
-    .grid {
+    .section {
+      padding: clamp(16px, 3vw, 26px);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .section:last-child { border-bottom: 0; }
+
+    .choice-grid {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 14px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
     }
 
-    .field {
-      min-width: 0;
-    }
-
-    label {
-      display: flex;
-      justify-content: space-between;
-      gap: 8px;
-      margin-bottom: 7px;
-      color: #3c382f;
-      font-size: .86rem;
-      font-weight: 900;
-    }
-
-    label span {
-      color: var(--muted);
-      font-weight: 700;
-    }
-
-    input,
-    select {
-      width: 100%;
-      min-width: 0;
-      height: 48px;
-      border: 1px solid rgba(25, 27, 22, .24);
+    .drink-choice {
+      position: relative;
+      min-height: 110px;
+      border: 1px solid var(--line);
       border-radius: var(--radius);
-      outline: 0;
-      background: #fffdf8;
-      color: var(--ink);
-      padding: 0 13px;
-      transition: border-color .16s ease, box-shadow .16s ease, transform .16s ease;
+      background: var(--panel);
+      padding: 14px;
+      text-align: left;
+      color: var(--text);
+      transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease;
     }
 
-    input:focus,
-    select:focus {
-      border-color: var(--blue);
-      box-shadow: 0 0 0 4px rgba(39, 126, 165, .18);
+    .drink-choice:hover {
+      transform: translateY(-2px);
+      border-color: rgba(43, 119, 168, .4);
+      box-shadow: 0 12px 26px rgba(23, 23, 19, .1);
     }
 
-    .divider {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      margin: 28px 0 16px;
+    .drink-choice b {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 1rem;
+      line-height: 1.15;
+    }
+
+    .drink-choice span {
       color: var(--muted);
-      font-weight: 900;
-      letter-spacing: .05em;
-      text-transform: uppercase;
-      font-size: .78rem;
+      font-size: .86rem;
+      line-height: 1.3;
     }
 
-    .divider::after {
-      content: "";
-      flex: 1;
-      height: 1px;
-      background: var(--line);
+    .drink-choice em {
+      position: absolute;
+      right: 12px;
+      bottom: 10px;
+      color: var(--blue);
+      font-style: normal;
+      font-weight: 950;
     }
 
-    .drinks {
+    .drinks-list {
       display: grid;
-      gap: 12px;
+      gap: 10px;
+      margin-top: 16px;
     }
 
     .drink-row {
       display: grid;
-      grid-template-columns: 1.3fr .78fr .72fr .62fr 42px;
-      gap: 10px;
-      align-items: end;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
       border: 1px solid var(--line);
       border-radius: var(--radius);
-      background: rgba(255, 253, 248, .78);
+      background: #fffdf8;
       padding: 12px;
-      animation: rise .24s ease both;
+      animation: rise .2s ease both;
     }
 
-    .mini label {
-      margin-bottom: 5px;
+    .drink-main {
+      display: grid;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .drink-title {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: baseline;
+      font-weight: 950;
+    }
+
+    .drink-title small {
       color: var(--muted);
-      font-size: .72rem;
-      letter-spacing: .06em;
+      font-size: .82rem;
+      font-weight: 800;
+    }
+
+    .edit-grid {
+      display: grid;
+      grid-template-columns: minmax(150px, 1.1fr) repeat(3, minmax(76px, .55fr));
+      gap: 8px;
+    }
+
+    .field label {
+      display: block;
+      margin-bottom: 6px;
+      color: #4a4b43;
+      font-size: .78rem;
+      font-weight: 950;
       text-transform: uppercase;
     }
 
-    .mini input,
-    .mini select {
-      height: 42px;
-      padding: 0 10px;
+    input, select {
+      width: 100%;
+      min-width: 0;
+      height: 44px;
+      border: 1px solid #cfc8b9;
+      border-radius: var(--radius);
+      background: #fffefa;
+      color: var(--text);
+      outline: 0;
+      padding: 0 11px;
+      transition: border-color .16s ease, box-shadow .16s ease;
     }
+
+    input:focus, select:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 4px rgba(43, 119, 168, .16);
+    }
+
+    .row-actions {
+      display: grid;
+      grid-template-columns: 40px 44px 40px;
+      align-items: center;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--soft);
+    }
+
+    .stepper {
+      height: 40px;
+      background: transparent;
+      color: var(--ink);
+      font-size: 1.3rem;
+      font-weight: 950;
+    }
+
+    .qty-readout {
+      display: grid;
+      place-items: center;
+      height: 40px;
+      border-inline: 1px solid var(--line);
+      font-weight: 950;
+    }
+
+    .remove {
+      width: 100%;
+      height: 36px;
+      margin-top: 8px;
+      border-radius: 999px;
+      background: #fff0ea;
+      color: var(--red);
+      font-weight: 950;
+    }
+
+    .personal-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .time-chips, .sex-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 9px;
+    }
+
+    .chip, .tab {
+      min-height: 36px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fffdf8;
+      color: var(--text);
+      padding: 0 12px;
+      font-size: .88rem;
+      font-weight: 950;
+      transition: background .16s ease, border-color .16s ease, transform .16s ease;
+    }
+
+    .chip:hover, .tab:hover, .chip.active, .tab.active {
+      border-color: rgba(43, 119, 168, .42);
+      background: #eaf4f8;
+      transform: translateY(-1px);
+    }
+
+    details {
+      margin-top: 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fffdf8;
+    }
+
+    summary {
+      padding: 13px 14px;
+      cursor: pointer;
+      font-weight: 950;
+    }
+
+    .advanced {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      padding: 0 14px 14px;
+    }
+
+    .empty-warning {
+      display: none;
+      margin: 14px 0 0;
+      border: 1px solid rgba(189, 52, 45, .24);
+      border-radius: var(--radius);
+      background: #fff2ec;
+      color: #6e2b21;
+      padding: 12px 14px;
+      font-weight: 900;
+      line-height: 1.4;
+    }
+
+    .empty-warning.show { display: block; }
 
     .actions {
       display: flex;
@@ -308,19 +523,18 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      min-height: 46px;
+      min-height: 44px;
       border-radius: var(--radius);
       background: var(--ink);
-      color: var(--paper);
-      padding: 0 16px;
-      font-weight: 900;
-      transition: transform .16s ease, box-shadow .16s ease, background .16s ease;
+      color: #fff7e8;
+      padding: 0 15px;
+      font-weight: 950;
+      transition: transform .16s ease, box-shadow .16s ease;
     }
 
     .btn:hover {
       transform: translateY(-2px);
-      box-shadow: 0 12px 22px rgba(25, 27, 22, .18);
+      box-shadow: 0 12px 24px rgba(23, 23, 19, .16);
     }
 
     .btn.secondary {
@@ -329,405 +543,156 @@
       color: var(--ink);
     }
 
-    .icon-btn {
-      width: 42px;
-      height: 42px;
-      border: 1px solid rgba(200, 61, 53, .35);
-      border-radius: var(--radius);
-      background: #fff3ec;
-      color: var(--red);
-      font-size: 1.2rem;
-      font-weight: 900;
-      transition: transform .16s ease, background .16s ease;
-    }
-
-    .icon-btn:hover {
-      transform: translateY(-2px);
-      background: #ffe2d7;
-    }
-
-    .meter-card {
-      position: sticky;
-      top: 18px;
-      border: 1px solid rgba(25, 27, 22, .18);
-      border-radius: var(--radius);
-      overflow: hidden;
-      background: #fffdf8;
-      box-shadow: 0 18px 46px rgba(25, 27, 22, .12);
-    }
-
-    .meter-top {
-      position: relative;
-      min-height: 270px;
-      padding: 24px;
-      color: var(--paper);
-      background:
-        radial-gradient(circle at 76% 20%, rgba(255, 255, 255, .18), transparent 10rem),
-        var(--green);
-      transition: background .2s ease;
-    }
-
-    .meter-top::after {
-      content: "";
-      position: absolute;
-      right: -72px;
-      bottom: -92px;
-      width: 240px;
-      aspect-ratio: 1;
-      border: 28px solid rgba(255, 255, 255, .15);
-      border-radius: 999px;
-    }
-
-    .meter-top.warn {
-      color: var(--ink);
-      background:
-        radial-gradient(circle at 76% 20%, rgba(255, 255, 255, .25), transparent 10rem),
-        var(--yellow);
-    }
-
-    .meter-top.high {
-      background:
-        radial-gradient(circle at 76% 20%, rgba(255, 255, 255, .18), transparent 10rem),
-        var(--orange);
-    }
-
-    .meter-top.danger {
-      background:
-        radial-gradient(circle at 76% 20%, rgba(255, 255, 255, .16), transparent 10rem),
-        var(--red);
-    }
-
-    .meter-top.critical {
-      background:
-        radial-gradient(circle at 76% 20%, rgba(255, 255, 255, .11), transparent 10rem),
-        #151515;
-    }
-
-    .reading-label {
-      position: relative;
-      z-index: 1;
-      margin: 0 0 20px;
-      font-weight: 900;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-      font-size: .78rem;
-      opacity: .82;
-    }
-
-    .bac {
-      position: relative;
-      z-index: 1;
-      display: flex;
-      align-items: end;
-      gap: 10px;
-      font-family: Georgia, "Times New Roman", serif;
-      font-size: clamp(4rem, 10vw, 7rem);
-      line-height: .82;
-      letter-spacing: 0;
-    }
-
-    .unit {
-      margin-bottom: 10px;
-      font-family: "Aptos", "Trebuchet MS", Verdana, sans-serif;
-      font-size: 1rem;
-      font-weight: 900;
-      text-transform: uppercase;
-    }
-
-    .risk {
-      position: relative;
-      z-index: 1;
-      max-width: 380px;
-      margin: 22px 0 0;
-      font-size: 1.18rem;
-      font-weight: 900;
-      line-height: 1.3;
-    }
-
-    .bar {
-      position: relative;
-      z-index: 1;
-      height: 12px;
-      margin-top: 28px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, .28);
-      overflow: hidden;
-    }
-
-    .meter-top.warn .bar {
-      background: rgba(25, 27, 22, .18);
-    }
-
-    .bar span {
-      display: block;
-      width: 0;
-      height: 100%;
-      border-radius: inherit;
-      background: #fffdf8;
-      transition: width .24s ease;
-    }
-
-    .meter-top.warn .bar span {
-      background: var(--ink);
-    }
-
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      border-top: 1px solid var(--line);
-    }
-
-    .stat {
-      min-height: 96px;
-      padding: 16px;
-      border-right: 1px solid var(--line);
-      border-bottom: 1px solid var(--line);
-    }
-
-    .stat:nth-child(2n) {
-      border-right: 0;
-    }
-
-    .stat strong {
-      display: block;
-      margin-bottom: 5px;
-      font-family: Georgia, "Times New Roman", serif;
-      font-size: 1.45rem;
-      line-height: 1;
-    }
-
-    .stat span {
+    .footnote {
+      margin: 14px 0 0;
       color: var(--muted);
-      font-size: .88rem;
-      line-height: 1.35;
-    }
-
-    .callout {
-      margin-top: 14px;
-      border: 1px solid rgba(200, 61, 53, .25);
-      border-radius: var(--radius);
-      background: #fff7ef;
-      color: #513229;
-      padding: 14px 15px;
+      font-size: .9rem;
       line-height: 1.5;
     }
 
-    .callout strong {
-      color: var(--red);
-    }
-
-    .formula {
-      margin-top: 14px;
-      color: var(--muted);
-      font-size: .88rem;
-      line-height: 1.45;
-    }
-
-    .empty-warning {
-      display: none;
-      margin-top: 10px;
-      color: var(--red);
-      font-weight: 900;
-      line-height: 1.4;
-    }
-
-    .empty-warning.show {
-      display: block;
-    }
-
     @keyframes rise {
-      from {
-        opacity: 0;
-        transform: translateY(8px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      from { opacity: 0; transform: translateY(7px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
-    @media (max-width: 920px) {
-      .hero,
-      .app {
-        grid-template-columns: 1fr;
-      }
-
-      .controls {
-        border-right: 0;
-        border-bottom: 1px solid var(--line);
-      }
-
-      .meter-card {
-        position: static;
-      }
+    @media (max-width: 940px) {
+      .dashboard { grid-template-columns: 1fr; }
+      .result-panel { position: static; }
+      .signal { min-height: 340px; }
     }
 
-    @media (max-width: 680px) {
-      main {
-        width: min(100% - 16px, 1200px);
-        padding: 8px 0;
-      }
-
-      .hero {
-        padding: 22px;
-      }
-
-      .hero-card {
-        padding: 16px;
-      }
-
-      .grid,
-      .stats {
-        grid-template-columns: 1fr;
-      }
-
-      .stat {
-        border-right: 0;
-      }
-
-      .section-head {
-        display: block;
-      }
-
-      .pill {
-        display: inline-flex;
-        margin-top: 12px;
-      }
-
-      .drink-row {
-        grid-template-columns: 1fr 1fr;
-      }
-
-      .drink-row .mini:first-child,
-      .drink-row .icon-btn {
-        grid-column: 1 / -1;
-      }
-
-      .icon-btn {
-        width: 100%;
-      }
+    @media (max-width: 700px) {
+      main { width: min(100% - 14px, 1160px); padding-top: 8px; }
+      .topbar { align-items: flex-start; }
+      .notice { text-align: left; font-size: .84rem; }
+      .choice-grid, .personal-grid, .advanced, .summary { grid-template-columns: 1fr; }
+      .metric { border-right: 0; }
+      .edit-grid { grid-template-columns: 1fr 1fr; }
+      .drink-row { grid-template-columns: 1fr; }
+      .row-actions { width: min(180px, 100%); }
     }
   </style>
 </head>
 <body>
   <main>
-    <div class="shell">
-      <section class="hero" aria-labelledby="title">
-        <div>
-          <p class="eyebrow">Cálculo orientativo</p>
-          <h1 id="title">Alcoholemia al instante</h1>
-          <p class="hero-text">Estimá alcohol en sangre con una fórmula Widmark simplificada. Cargá tus bebidas, ajustá el tiempo transcurrido y mirá el nivel de riesgo en vivo.</p>
-        </div>
-        <aside class="hero-card">
-          <strong>No decide por vos</strong>
-          <p>El resultado puede cambiar por comida, metabolismo, medicación, salud y precisión de las medidas. Si bebiste, no manejes.</p>
-        </aside>
-      </section>
+    <header class="topbar">
+      <div class="brand"><span class="mark">0,0</span><span>Calculadora de alcoholemia</span></div>
+      <p class="notice">Estimación educativa. Si tomaste alcohol, la decisión segura es no manejar.</p>
+    </header>
 
-      <section class="app">
-        <form class="controls" id="calculator">
-          <div class="section-head">
-            <div>
-              <h2>Datos personales</h2>
-              <p class="hint">Usá valores reales para mejorar la estimación.</p>
-            </div>
-            <span class="pill">g/L de sangre</span>
+    <div class="dashboard">
+      <aside class="result-panel" aria-live="polite">
+        <section class="signal" id="signal">
+          <p class="label">Tu lectura estimada</p>
+          <h1 id="headline">Sin alcohol cargado</h1>
+          <div class="decision" id="decision">Cargá lo que tomaste para estimar</div>
+          <div class="reading"><span id="bac">0,00</span><span class="unit">g/L</span></div>
+          <div class="scale" aria-hidden="true">
+            <div class="track"><span class="fill" id="bar"></span></div>
+            <div class="ticks"><span>0</span><span>0,5</span><span>1,0</span><span>1,5+</span></div>
           </div>
+        </section>
 
-          <div class="grid">
-            <div class="field">
-              <label for="weight">Peso <span>kg</span></label>
-              <input id="weight" type="number" min="30" max="220" step="1" value="75" inputmode="decimal">
-            </div>
-            <div class="field">
-              <label for="sex">Sexo biológico <span>factor r</span></label>
-              <select id="sex">
-                <option value="0.68">Hombre</option>
-                <option value="0.55">Mujer</option>
-              </select>
-            </div>
-            <div class="field">
-              <label for="hours">Tiempo desde la primera bebida <span>horas</span></label>
-              <input id="hours" type="number" min="0" max="24" step="0.25" value="2" inputmode="decimal">
-            </div>
-            <div class="field">
-              <label for="rate">Eliminación estimada <span>g/L por hora</span></label>
-              <select id="rate">
-                <option value="0.15">Promedio: 0,15</option>
-                <option value="0.10">Lenta: 0,10</option>
-                <option value="0.20">Rápida: 0,20</option>
-              </select>
-            </div>
-            <div class="field">
-              <label for="limit">Límite de referencia <span>g/L</span></label>
-              <select id="limit">
-                <option value="0.5">0,5 general</option>
-                <option value="0.2">0,2 profesional / moto</option>
-                <option value="0">0,0 tolerancia cero</option>
-                <option value="1">1,0 referencia alta</option>
-              </select>
-            </div>
-            <div class="field">
-              <label for="absorption">Absorción <span>% considerado</span></label>
-              <select id="absorption">
-                <option value="1">Completa: 100%</option>
-                <option value="0.85">Con comida: 85%</option>
-                <option value="0.7">Reciente: 70%</option>
-              </select>
-            </div>
+        <section class="summary">
+          <div class="metric"><strong id="clearTime">0 h</strong><span>hasta 0,0 g/L aprox.</span></div>
+          <div class="metric"><strong id="limitStatus">Margen 0,50</strong><span>contra el límite elegido</span></div>
+          <div class="metric"><strong id="grams">0 g</strong><span>alcohol puro estimado</span></div>
+          <div class="metric"><strong id="raw">0,00</strong><span>g/L antes de descontar tiempo</span></div>
+        </section>
+      </aside>
+
+      <form class="panel" id="calculator">
+        <section class="panel-head">
+          <div>
+            <h2>Contame la situación</h2>
+            <p class="hint">Sumá bebidas, ajustá cantidad y mirá el semáforo.</p>
           </div>
+          <span class="step-badge">1</span>
+        </section>
 
-          <div class="divider">Bebidas</div>
-          <div class="drinks" id="drinks"></div>
-          <p class="empty-warning" id="warning">Agregá al menos una bebida con volumen, graduación y cantidad mayor a cero.</p>
-
+        <section class="section">
+          <div class="choice-grid" id="presetButtons"></div>
+          <div class="drinks-list" id="drinks"></div>
+          <p class="empty-warning" id="warning">Agregá al menos una bebida con cantidad mayor a cero.</p>
           <div class="actions">
-            <button class="btn" type="button" id="add">+ Agregar bebida</button>
-            <button class="btn secondary" type="button" id="reset">Restablecer ejemplo</button>
+            <button class="btn secondary" type="button" id="custom">Agregar bebida personalizada</button>
+            <button class="btn secondary" type="button" id="reset">Volver al ejemplo</button>
           </div>
-        </form>
+        </section>
 
-        <aside class="result">
-          <section class="meter-card" aria-live="polite">
-            <div class="meter-top" id="meter">
-              <p class="reading-label">Resultado estimado</p>
-              <div class="bac"><span id="bac">0.00</span><span class="unit">g/L</span></div>
-              <p class="risk" id="risk">Sin alcohol estimado.</p>
-              <div class="bar" aria-hidden="true"><span id="bar"></span></div>
-            </div>
-
-            <div class="stats">
-              <div class="stat">
-                <strong id="grams">0 g</strong>
-                <span>Alcohol puro consumido</span>
-              </div>
-              <div class="stat">
-                <strong id="raw">0.00</strong>
-                <span>g/L antes de descontar eliminación</span>
-              </div>
-              <div class="stat">
-                <strong id="limitStatus">-</strong>
-                <span>Comparación con el límite elegido</span>
-              </div>
-              <div class="stat">
-                <strong id="clearTime">0 h</strong>
-                <span>Tiempo aproximado hasta 0,0 g/L</span>
-              </div>
-            </div>
-          </section>
-
-          <div class="callout">
-            <strong>Importante:</strong> esta calculadora no reemplaza un alcoholímetro ni una medición legal. Ante cualquier consumo, la decisión segura es no conducir.
+        <section class="panel-head">
+          <div>
+            <h2>Tus datos</h2>
+            <p class="hint">Solo lo necesario queda visible; lo técnico está abajo.</p>
           </div>
-          <p class="formula">Fórmula usada: gramos de alcohol / (peso x factor de distribución) - eliminación por hora x tiempo. Es una aproximación educativa.</p>
-        </aside>
-      </section>
+          <span class="step-badge">2</span>
+        </section>
+
+        <section class="section">
+          <div class="personal-grid">
+            <div class="field">
+              <label for="weight">Peso</label>
+              <input id="weight" type="number" min="30" max="220" step="1" value="75" inputmode="decimal" aria-label="Peso en kilogramos">
+            </div>
+            <div class="field">
+              <label>Composición corporal</label>
+              <div class="sex-tabs" aria-label="Composición corporal">
+                <button class="tab active" type="button" data-sex="0.68">Hombre</button>
+                <button class="tab" type="button" data-sex="0.55">Mujer</button>
+              </div>
+              <input id="sex" type="hidden" value="0.68">
+            </div>
+            <div class="field">
+              <label for="hours">Hace cuánto empezaste</label>
+              <input id="hours" type="number" min="0" max="24" step="0.25" value="2" inputmode="decimal" aria-label="Horas desde la primera bebida">
+              <div class="time-chips" aria-label="Tiempos rápidos">
+                <button class="chip" type="button" data-hours="0.5">30 min</button>
+                <button class="chip" type="button" data-hours="1">1 h</button>
+                <button class="chip active" type="button" data-hours="2">2 h</button>
+                <button class="chip" type="button" data-hours="4">4 h</button>
+              </div>
+            </div>
+            <div class="field">
+              <label for="absorption">Contexto</label>
+              <select id="absorption">
+                <option value="1">Sin comida o absorción completa</option>
+                <option value="0.85">Comiste durante el consumo</option>
+                <option value="0.7">Bebida muy reciente</option>
+              </select>
+            </div>
+          </div>
+
+          <details>
+            <summary>Opciones avanzadas</summary>
+            <div class="advanced">
+              <div class="field">
+                <label for="limit">Límite de referencia</label>
+                <select id="limit">
+                  <option value="0.5">0,5 g/L general</option>
+                  <option value="0.2">0,2 g/L profesional / moto</option>
+                  <option value="0">0,0 tolerancia cero</option>
+                  <option value="1">1,0 g/L referencia alta</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="rate">Eliminación estimada</label>
+                <select id="rate">
+                  <option value="0.15">Promedio: 0,15 g/L por hora</option>
+                  <option value="0.10">Lenta: 0,10 g/L por hora</option>
+                  <option value="0.20">Rápida: 0,20 g/L por hora</option>
+                </select>
+              </div>
+            </div>
+          </details>
+          <p class="footnote">No reemplaza alcoholímetro, medición legal ni criterio médico. Medicación, comida, salud y metabolismo pueden cambiar el resultado.</p>
+        </section>
+      </form>
     </div>
   </main>
 
   <script>
     const presets = [
-      { name: "Cerveza lata", volume: 473, abv: 5, qty: 2 },
+      { name: "Cerveza lata", volume: 473, abv: 5, qty: 1 },
       { name: "Copa de vino", volume: 150, abv: 13, qty: 1 },
       { name: "Fernet / trago", volume: 70, abv: 39, qty: 1 },
       { name: "Espumante", volume: 150, abv: 12, qty: 1 },
@@ -735,14 +700,16 @@
       { name: "Personalizada", volume: 330, abv: 5, qty: 1 }
     ];
 
+    const presetButtons = document.querySelector("#presetButtons");
     const drinks = document.querySelector("#drinks");
     const warning = document.querySelector("#warning");
-    const meter = document.querySelector("#meter");
+    const signal = document.querySelector("#signal");
     const bar = document.querySelector("#bar");
-    const inputs = ["weight", "sex", "hours", "rate", "limit", "absorption"].map((id) => document.querySelector(`#${id}`));
+    const watched = ["weight", "sex", "hours", "rate", "limit", "absorption"].map((id) => document.querySelector(`#${id}`));
     const output = {
+      headline: document.querySelector("#headline"),
+      decision: document.querySelector("#decision"),
       bac: document.querySelector("#bac"),
-      risk: document.querySelector("#risk"),
       grams: document.querySelector("#grams"),
       raw: document.querySelector("#raw"),
       limitStatus: document.querySelector("#limitStatus"),
@@ -758,27 +725,57 @@
       return value.toFixed(digits).replace(".", ",");
     }
 
+    function describePreset(drink) {
+      return `${drink.volume} ml · ${String(drink.abv).replace(".", ",")}% alc.`;
+    }
+
+    function renderPresetButtons() {
+      presetButtons.innerHTML = presets.slice(0, 5).map((drink, index) => `
+        <button class="drink-choice" type="button" data-preset="${index}">
+          <b>${drink.name}</b>
+          <span>${describePreset(drink)}</span>
+          <em>+ sumar</em>
+        </button>
+      `).join("");
+
+      presetButtons.querySelectorAll("[data-preset]").forEach((button) => {
+        button.addEventListener("click", () => addDrink(presets[asNumber(button.dataset.preset)]));
+      });
+    }
+
     function drinkTemplate() {
       return `
-        <div class="mini">
-          <label>Bebida</label>
-          <select data-field="preset">
-            ${presets.map((item, index) => `<option value="${index}">${item.name}</option>`).join("")}
-          </select>
+        <div class="drink-main">
+          <div class="drink-title"><span data-title>Bebida</span><small data-detail></small></div>
+          <div class="edit-grid">
+            <div class="field">
+              <label>Bebida</label>
+              <select data-field="preset">
+                ${presets.map((item, index) => `<option value="${index}">${item.name}</option>`).join("")}
+              </select>
+            </div>
+            <div class="field">
+              <label>ml</label>
+              <input data-field="volume" type="number" min="0" step="1" inputmode="decimal">
+            </div>
+            <div class="field">
+              <label>% alc.</label>
+              <input data-field="abv" type="number" min="0" max="96" step="0.1" inputmode="decimal">
+            </div>
+            <div class="field">
+              <label>Cant.</label>
+              <input data-field="qty" type="number" min="0" step="0.5" inputmode="decimal">
+            </div>
+          </div>
         </div>
-        <div class="mini">
-          <label>ml</label>
-          <input data-field="volume" type="number" min="0" step="1" inputmode="decimal">
+        <div>
+          <div class="row-actions" aria-label="Cambiar cantidad">
+            <button class="stepper" type="button" data-action="minus" aria-label="Restar cantidad">−</button>
+            <span class="qty-readout" data-qty-readout>1</span>
+            <button class="stepper" type="button" data-action="plus" aria-label="Sumar cantidad">+</button>
+          </div>
+          <button class="remove" type="button">Quitar</button>
         </div>
-        <div class="mini">
-          <label>% alc.</label>
-          <input data-field="abv" type="number" min="0" max="96" step="0.1" inputmode="decimal">
-        </div>
-        <div class="mini">
-          <label>Cant.</label>
-          <input data-field="qty" type="number" min="0" step="0.5" inputmode="decimal">
-        </div>
-        <button class="icon-btn" type="button" aria-label="Eliminar bebida">x</button>
       `;
     }
 
@@ -786,6 +783,18 @@
       row.querySelector("[data-field='volume']").value = drink.volume;
       row.querySelector("[data-field='abv']").value = drink.abv;
       row.querySelector("[data-field='qty']").value = drink.qty;
+      syncRow(row);
+    }
+
+    function syncRow(row) {
+      const preset = row.querySelector("[data-field='preset']");
+      const selected = presets[asNumber(preset.value)] || presets[presets.length - 1];
+      const volume = asNumber(row.querySelector("[data-field='volume']").value);
+      const abv = asNumber(row.querySelector("[data-field='abv']").value);
+      const qty = asNumber(row.querySelector("[data-field='qty']").value);
+      row.querySelector("[data-title]").textContent = selected.name;
+      row.querySelector("[data-detail]").textContent = `${format(volume, 0)} ml · ${format(abv, 1)}%`;
+      row.querySelector("[data-qty-readout]").textContent = format(qty, qty % 1 ? 1 : 0);
     }
 
     function addDrink(drink = presets[0]) {
@@ -803,14 +812,32 @@
         calculate();
       });
 
-      row.querySelector(".icon-btn").addEventListener("click", () => {
-        row.remove();
-        if (!drinks.children.length) addDrink(presets[presets.length - 1]);
+      row.querySelector("[data-action='minus']").addEventListener("click", () => {
+        const qty = row.querySelector("[data-field='qty']");
+        qty.value = Math.max(asNumber(qty.value) - 1, 0);
+        syncRow(row);
         calculate();
       });
 
-      row.addEventListener("input", calculate);
+      row.querySelector("[data-action='plus']").addEventListener("click", () => {
+        const qty = row.querySelector("[data-field='qty']");
+        qty.value = asNumber(qty.value) + 1;
+        syncRow(row);
+        calculate();
+      });
+
+      row.querySelector(".remove").addEventListener("click", () => {
+        row.remove();
+        calculate();
+      });
+
+      row.addEventListener("input", () => {
+        syncRow(row);
+        calculate();
+      });
+
       drinks.append(row);
+      calculate();
     }
 
     function getAlcoholGrams() {
@@ -822,22 +849,27 @@
       }, 0);
     }
 
-    function setRisk(bac, limit) {
-      meter.className = "meter-top";
-      if (bac <= 0) {
-        output.risk.textContent = "Sin alcohol estimado.";
+    function setRisk(bac, grams, limit) {
+      signal.className = "signal";
+      if (grams <= 0 || bac <= 0) {
+        output.headline.textContent = grams <= 0 ? "Sin alcohol cargado" : "Ahora marca 0,0";
+        output.decision.textContent = grams <= 0 ? "Cargá lo que tomaste para estimar" : "La estimación actual da 0,0 g/L";
       } else if (bac < limit && bac < 0.5) {
-        output.risk.textContent = "Alcohol detectado. Evitá conducir aunque esté por debajo del límite elegido.";
-        meter.classList.add("warn");
+        output.headline.textContent = "Alcohol detectado";
+        output.decision.textContent = "Recomendación: no manejes";
+        signal.classList.add("warn");
       } else if (bac < 0.8) {
-        output.risk.textContent = "Supera o se acerca a un rango riesgoso. No conduzcas.";
-        meter.classList.add("high");
+        output.headline.textContent = "Riesgo alto";
+        output.decision.textContent = "No manejes. Buscá otra forma de volver.";
+        signal.classList.add("high");
       } else if (bac < 1.5) {
-        output.risk.textContent = "Nivel alto. Evitá toda actividad de riesgo y buscá traslado seguro.";
-        meter.classList.add("danger");
+        output.headline.textContent = "Nivel peligroso";
+        output.decision.textContent = "No hagas actividades de riesgo.";
+        signal.classList.add("danger");
       } else {
-        output.risk.textContent = "Nivel muy alto. Si hay vómitos, confusión o somnolencia, buscá asistencia médica.";
-        meter.classList.add("critical");
+        output.headline.textContent = "Pedí ayuda";
+        output.decision.textContent = "Si hay somnolencia, vómitos o confusión, buscá asistencia médica.";
+        signal.classList.add("critical");
       }
     }
 
@@ -859,14 +891,22 @@
       output.grams.textContent = `${Math.round(grams)} g`;
       output.raw.textContent = format(rawBac);
       output.clearTime.textContent = `${format(remaining, 1)} h`;
-      output.limitStatus.textContent = distance > 0 ? `+${format(distance)} g/L` : `${format(Math.abs(distance))} g/L`;
+      output.limitStatus.textContent = distance > 0 ? `Excede +${format(distance)} g/L` : `Margen ${format(Math.abs(distance))} g/L`;
       bar.style.width = `${Math.min((bac / 1.5) * 100, 100)}%`;
-      setRisk(bac, limit);
+
+      document.querySelectorAll("[data-hours]").forEach((button) => {
+        button.classList.toggle("active", asNumber(button.dataset.hours) === hours);
+      });
+      document.querySelectorAll("[data-sex]").forEach((button) => {
+        button.classList.toggle("active", button.dataset.sex === document.querySelector("#sex").value);
+      });
+
+      setRisk(bac, grams, limit);
     }
 
     function resetExample() {
       drinks.innerHTML = "";
-      addDrink(presets[0]);
+      addDrink({ ...presets[0], qty: 2 });
       addDrink(presets[1]);
       document.querySelector("#weight").value = 75;
       document.querySelector("#sex").value = "0.68";
@@ -877,15 +917,23 @@
       calculate();
     }
 
-    document.querySelector("#add").addEventListener("click", () => {
-      addDrink(presets[presets.length - 1]);
-      calculate();
-    });
-
+    renderPresetButtons();
+    document.querySelector("#custom").addEventListener("click", () => addDrink(presets[presets.length - 1]));
     document.querySelector("#reset").addEventListener("click", resetExample);
-    inputs.forEach((input) => input.addEventListener("input", calculate));
-    inputs.forEach((input) => input.addEventListener("change", calculate));
-
+    document.querySelectorAll("[data-hours]").forEach((button) => {
+      button.addEventListener("click", () => {
+        document.querySelector("#hours").value = button.dataset.hours;
+        calculate();
+      });
+    });
+    document.querySelectorAll("[data-sex]").forEach((button) => {
+      button.addEventListener("click", () => {
+        document.querySelector("#sex").value = button.dataset.sex;
+        calculate();
+      });
+    });
+    watched.forEach((input) => input.addEventListener("input", calculate));
+    watched.forEach((input) => input.addEventListener("change", calculate));
     resetExample();
   </script>
 </body>
